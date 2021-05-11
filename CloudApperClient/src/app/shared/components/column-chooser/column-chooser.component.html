@@ -1,0 +1,72 @@
+  <div cdkDropListGroup class="column-chooser-container">
+    <div class="field-dnd-container">
+      <h4 class="column-chooser-title">{{"AvailableFields" | transloco}}</h4>
+      <div class="field-dnd-list" [style.height.px]="viewHeight" cdkDropList [cdkDropListData]="fields"
+        (cdkDropListDropped)="onItemDrop($event)">
+        <div class="field-dnd-box" *ngFor="let field of fields" cdkDrag>
+          <ng-container *ngTemplateOutlet="fieldIcon; context: {ControlType: field.ControlType}"></ng-container>
+          {{field.Label}}
+        </div>
+      </div>
+    </div>
+    <div class="field-dnd-image-container">
+      <div class="field-dnd-image">
+        <img height="64" width="64" src="../../../../assets/img/drag-right-128.png">
+      </div>
+    </div>
+    <div class="field-dnd-container">
+      <h4 class="column-chooser-title">{{"SelectedFields" | transloco}}</h4>
+      <div class="field-dnd-list" [style.height.px]="viewHeight" cdkDropList [cdkDropListData]="selectedFields"
+        (cdkDropListDropped)="onItemDrop($event)">
+        <div class="field-dnd-box" *ngFor="let selectedField of selectedFields" cdkDrag>
+          <ng-container *ngTemplateOutlet="fieldIcon; context: {ControlType: selectedField.ControlType}"></ng-container>
+          {{selectedField.Label}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #fieldIcon let-controlType="ControlType">
+    <div class="field-icon">
+      <ng-container [ngSwitch]="controlType">
+        <img *ngSwitchCase="EnumControlType.TextBox" height="20" width="20"
+          src="../../../../assets/img/control-icons/text-field.png">
+        <img *ngSwitchCase="EnumControlType.TextArea" height="20" width="20"
+          src="../../../../assets/img/control-icons/text-area.png">
+        <img *ngSwitchCase="EnumControlType.AutoCompleteTextBox" height="20" width="20"
+          src="../../../../assets/img/control-icons/dropdown.png">
+        <img *ngSwitchCase="EnumControlType.CheckBox" height="20" width="20"
+          src="../../../../assets/img/control-icons/boolean.png">
+        <img *ngSwitchCase="EnumControlType.Switch" height="20" width="20"
+          src="../../../../assets/img/control-icons/switch1.png">
+        <img *ngSwitchCase="EnumControlType.RadioButton" height="20" width="20"
+          src="../../../../assets/img/control-icons/radio.png">
+        <img *ngSwitchCase="EnumControlType.MultiSelectListBox" height="20" width="20"
+          src="../../../../assets/img/control-icons/multiple-choice-dropdown.png">
+        <img *ngSwitchCase="EnumControlType.DateOnly" height="20" width="20"
+          src="../../../../assets/img/control-icons/calender.png">
+        <img *ngSwitchCase="EnumControlType.DateTime" height="20" width="20"
+          src="../../../../assets/img/control-icons/date-time.png">
+        <img *ngSwitchCase="EnumControlType.TimeOnly" height="20" width="20"
+          src="../../../../assets/img/control-icons/time.png">
+        <img *ngSwitchCase="EnumControlType.Rating" height="20" width="20"
+          src="../../../../assets/img/control-icons/star-rating.png">
+        <img *ngSwitchCase="EnumControlType.Entity" height="20" width="20"
+          src="../../../../assets/img/control-icons/entity.png">
+        <img *ngSwitchCase="EnumControlType.Lookup" height="20" width="20"
+          src="../../../../assets/img/control-icons/Search-icon.png">
+        <img *ngSwitchCase="EnumControlType.Formula" height="20" width="20"
+          src="../../../../assets/img/control-icons/formula.png">
+        <img *ngSwitchCase="EnumControlType.Barcode" height="20" width="20"
+          src="../../../../assets/img/control-icons/barcode1.png">
+        <img *ngSwitchCase="EnumControlType.MultiMedia" height="20" width="20"
+          src="../../../../assets/img/control-icons/multimedia.png">
+        <img *ngSwitchCase="EnumControlType.PhoneNumber" height="20" width="20"
+          src="../../../../assets/img/control-icons/phone_v1_22x22.png">
+        <img *ngSwitchCase="EnumControlType.PlaceMarker" height="20" width="20"
+          src="../../../../assets/img/control-icons/place-maker-pin.jpg">
+        <img *ngSwitchCase="EnumControlType.LayoutMap" height="20" width="20"
+          src="../../../../assets/img/control-icons/layout-map-gray.png">
+        <img *ngSwitchDefault height="20" width="20" src="../../../../assets/img/control-icons/controls.png">
+      </ng-container>
+    </div>
+  </ng-template>

@@ -1,0 +1,11 @@
+{
+  "/api/*": {
+    "target": "https://dev-api.cloudapper.com/api/v1.3",
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "changeOrigin": true
+  }
+}

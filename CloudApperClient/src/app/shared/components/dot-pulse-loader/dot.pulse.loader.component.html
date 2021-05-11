@@ -1,0 +1,7 @@
+<div class="local-loader" *ngIf="!isRelative">
+    <div *ngIf="IsAsync? (IsLoading$ |async) : IsLoading" class="dot-pulse"></div>
+</div>
+
+<div class="relative-loader" *ngIf="isRelative">
+    <div *ngIf="IsAsync? (IsLoading$ |async) : IsLoading" class="dot-pulse"></div>
+</div>

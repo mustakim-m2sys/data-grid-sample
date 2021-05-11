@@ -1,0 +1,528 @@
+<ng-container *transloco="let t">
+  <div class="row" *ngIf="{
+gridVisibleFields:gridVisibleFields$ | async,
+showDataGridLoader:showDataGridLoader$ | async,
+showCustomLoaderLoadingInfo:showCustomLoaderLoadingInfo$ | async,
+showCustomLoaderSavingInfo:showCustomLoaderSavingInfo$ | async,
+showCustomLoaderSaveInfo:showCustomLoaderSaveInfo$ | async,
+showCustomLoaderOperationType: showCustomLoaderOperationType$ | async,
+showMultipleRecordsDeleteButton:showMultipleRecordsDeleteButton$ | async,
+loadIndicatorVisibleForMultipleRecordsDelete:loadIndicatorVisibleForMultipleRecordsDelete$ | async,
+totalRecords: totalRecords$ | async ,
+fetchedRecords: fetchedRecords$ | async,
+allowedPageSizes:allowedPageSizes$ | async,
+selectionModeEnabled:selectionModeEnabled$ | async,
+isDefaultUserFlowEnabled:isDefaultUserFlowEnabled$ | async,
+isEditLocked:isEditLocked$ | async,
+isSchemaValidForScheduler:isSchemaValidForScheduler$ | async
+} as TemplateData">
+    <div class="col-md-12">
+      <dx-data-grid id="gridContainer" class="dx-selection-disabled" #dataGridView [dataSource]="dataSource"
+        [height]="'90vh'" [width]="config.gridDisplayConfig.width"
+        [showBorders]="config.gridDisplayConfig.showBorders" [showRowLines]="config.gridDisplayConfig.showRowLines"
+        [rowAlternationEnabled]="config.gridDisplayConfig.rowAlternationEnabled"
+        [showColumnHeaders]="config.gridDisplayConfig.showColumnHeaders"
+        [showColumnLines]="config.gridDisplayConfig.showColumnLines"
+        [columnAutoWidth]="config.gridDisplayConfig.columnAutoWidth"
+        [columnMinWidth]="config.gridDisplayConfig.columnMinWidth"
+        [wordWrapEnabled]="config.gridDisplayConfig.wordWrapEnabled" [noDataText]="noDataTextForGrid$ | async"
+        [remoteOperations]="config.gridOperationConfig.remoteOperations"
+        [repaintChangesOnly]="config.gridOperationConfig.repaintChangesOnly"
+        [renderAsync]="config.gridOperationConfig.renderColumnsAsynchronously"
+        [cacheEnabled]="config.gridOperationConfig.cacheEnabled"
+        [focusStateEnabled]="config.gridOperationConfig.focusStateEnabled"
+        [keyboardNavigation]="config.gridOperationConfig.keyboardNavigation"
+        [allowColumnReordering]="config.gridOperationConfig.allowColumnReordering"
+        [allowColumnResizing]="config.gridOperationConfig.allowColumnResizing" (onContentReady)="onContentReady($event)"
+        (onSelectionChanged)="onSelectionChanged($event)" (onExporting)="onExporting($event)"
+        (onExported)="onExported($event)" (onToolbarPreparing)="onToolbarPreparing($event)"
+        (onEditingStart)="onEditingStart($event)" (onCellDblClick)="onCellDblClick($event)"
+        (onRowValidating)="showValidationErrors($event)" (onRowUpdating)="onRowUpdating($event)"
+        (onEditorPreparing)="onEditorPreparing($event)">
+        <!-- loader config -->
+        <dxo-load-panel [text]="t('LoadingDataPleaseWait')" [enabled]="TemplateData.showDataGridLoader"
+          [indicatorSrc]="'../../../assets/img/ca_loader_optimized.gif'">
+        </dxo-load-panel>
+        <!-- #region search and filter configs-->
+        <!-- hide global search when selection mode is enabled -->
+        <dxo-search-panel [(text)]="globalSearchText"
+          [visible]="config.searchAndFilterPanelConfig.searchPanelConfig.visible && !TemplateData.selectionModeEnabled"
+          [width]="config.searchAndFilterPanelConfig.searchPanelConfig.width"
+          [placeholder]="t(config.searchAndFilterPanelConfig.searchPanelConfig.placeholder)"
+          [highlightSearchText]="config.searchAndFilterPanelConfig.searchPanelConfig.highlightSearchText"
+          [highlightCaseSensitive]="config.searchAndFilterPanelConfig.searchPanelConfig.highlightCaseSensitive">
+        </dxo-search-panel>
+        <dxo-filter-row [visible]="config.searchAndFilterPanelConfig.filterRowVisible"
+          [operationDescriptions]="filterOperationDescriptions" [resetOperationText]="t('Reset')"
+          [showAllText]="t('All')" [betweenStartText]="t('BetweenStart')" [betweenEndText]="t('BetweenEnd')"
+          [applyFilter]="config.searchAndFilterPanelConfig.filterRowApplyFilter">
+        </dxo-filter-row>
+        <dxo-filter-panel [visible]="config.searchAndFilterPanelConfig.filterPanelVisible"></dxo-filter-panel>
+        <!-- endregion -->
+        <!-- #region selection configs-->
+        <dxo-selection [mode]="config.selectionConfiguration.selectionMode"
+          [selectAllMode]="config.selectionConfiguration.selectAllMode"
+          [showCheckBoxesMode]="config.selectionConfiguration.showCheckBoxesMode">
+        </dxo-selection>
+        <!-- endregion -->
+        <!-- #region export configs-->
+        <dxo-export [enabled]="config.dataExportImportConfiguration.dataExportEnabled"
+          [texts]="{exportAll: t('ExportAll'), exportSelectedRows: t('ExportSelected'), exportTo: t('ExportData')}"
+          [allowExportSelectedData]="config.dataExportImportConfiguration.allowExportSelectedData"></dxo-export>
+        <!-- endregion -->
+        <!-- #region group configs-->
+        <dxo-group-panel [visible]="config.groupingConfiguration.groupPanelVisible"
+          [emptyPanelText]="t(config.groupingConfiguration.groupEmptyPanelText)"></dxo-group-panel>
+        <dxo-grouping [autoExpandAll]="config.groupingConfiguration.autoExpandAll"
+          [expandMode]="config.groupingConfiguration.expandMode"
+          [contextMenuEnabled]="config.groupingConfiguration.contextMenuEnabled"></dxo-grouping>
+        <!-- endregion -->
+        <!-- #region sorting configs-->
+        <dxo-sorting [mode]="config.dataSortingMode"></dxo-sorting>
+        <!-- endregion -->
+        <!-- #region pagination and scrolling configs-->
+        <dxo-paging [pageSize]="config.scrollingConfiguration.pageSize">
+        </dxo-paging>
+        <dxo-pager [visible]="true"
+          [showPageSizeSelector]="TemplateData.totalRecords && !TemplateData.selectionModeEnabled"
+          [allowedPageSizes]="TemplateData.allowedPageSizes" [showInfo]="true"
+          infoText="{{t('Page')}} {0} {{ t('from')}} {1} ({2} {{t('Items')}})" [showNavigationButtons]="true">
+        </dxo-pager>
+        <!-- NOTE: enabled native scrollbar by force as devextreem scrollbar does not work after version(20.2.6) upgrade -->
+        <dxo-scrolling [mode]="config.scrollingConfiguration.dataScrollingMode" [useNative]="true"
+          [showScrollbar]="config.scrollingConfiguration.showScrollbar"
+          [rowRenderingMode]="config.scrollingConfiguration.rowRenderingMode"
+          [columnRenderingMode]="config.scrollingConfiguration.columnRenderingMode"
+          [preloadEnabled]="config.scrollingConfiguration.preloadEnabled">
+        </dxo-scrolling>
+        <!-- endregion -->
+        <!-- #region static column configs-->
+        <!-- Since ID in data export has stopped, no need to use it here -->
+        <!-- <dxi-column cssClass="vertical-align-middle" alignment="left" [renderAsync]="false" [minWidth]="100"
+          [caption]="'Id'" [dataField]="'Id'" [dataType]="GridDataTypeEnum.String" [visible]="false"
+          [cellTemplate]="DisplayTemplateEnum.EntityDetailsTemplate" [allowEditing]="false" [allowFiltering]="false"
+          [allowGrouping]="false" [allowSearch]="false">
+        </dxi-column> -->
+        <dxi-column
+          *ngIf="schema.ParentSchemas && schema.ParentSchemas.length && (parentDisplayPictureEnabled$ | async)"
+          cssClass="vertical-align-middle" alignment="center" [renderAsync]="false" [minWidth]="50"
+          [caption]="schema.ParentSchemas.length > 1 ? 'Reference Photo' : schema.ParentSchemas[0].Title + ' Photo'"
+          [dataField]="ControlNameConstants.PARENT_DISPLAY_PICTURE" [dataType]="GridDataTypeEnum.String"
+          [cellTemplate]="DisplayTemplateEnum.ParentPhotoTemplate" [allowEditing]="false" [allowSorting]="false"
+          [allowFiltering]="false" [allowGrouping]="false" [allowSearch]="false">
+        </dxi-column>
+        <dxi-column *ngIf="schema.ParentSchemas && schema.ParentSchemas.length" cssClass="vertical-align-middle"
+          alignment="left" [renderAsync]="false" [minWidth]="100"
+          [caption]="schema.ParentSchemas.length > 1 ? 'Reference' : schema.ParentSchemas[0].Title"
+          [dataField]="ControlNameConstants.PARENT_DISPLAY_NAME" [dataType]="GridDataTypeEnum.String"
+          [cellTemplate]="DisplayTemplateEnum.EntityDetailsTemplate" [allowEditing]="false" [allowFiltering]="false"
+          [allowGrouping]="true" [allowSearch]="false">
+        </dxi-column>
+        <!-- endregion -->
+        <!-- #region dynamic column configs-->
+        <ng-container *ngIf="TemplateData.gridVisibleFields">
+          <ng-container *ngFor="let gridVisibleField of TemplateData.gridVisibleFields">
+            <dxi-column
+              [cssClass]="gridVisibleField.IsAsyncRenderEnabled ? 'vertical-align-middle min-padding-column':'vertical-align-middle'"
+              [renderAsync]="gridVisibleField.IsAsyncRenderEnabled" [minWidth]="gridVisibleField.GridColumnWidth"
+              [alignment]="gridVisibleField.GridHorizontalAlignment" [caption]="gridVisibleField.Label"
+              [dataField]="gridVisibleField.Name" [dataType]="gridVisibleField.GridDataType"
+              [cellTemplate]="gridVisibleField.GridCellTemplateName"
+              [editCellTemplate]="gridVisibleField.GridEditTemplateName"
+              [editorOptions]="gridVisibleField.GridEditorOptions" [visible]="gridVisibleField.AllowGridView"
+              [allowEditing]="gridVisibleField.AllowGridEditing" [allowSorting]="gridVisibleField.AllowGridSorting"
+              [sortIndex]="gridVisibleField.SortIndex" [sortOrder]="gridVisibleField.SortOrder"
+              [allowFiltering]="gridVisibleField.AllowGridFiltering"
+              [filterOperations]="gridVisibleField.FilterOperations"
+              [allowGrouping]="gridVisibleField.AllowGridGrouping" [allowSearch]="gridVisibleField.AllowGridSearch">
+              <dxo-format *ngIf=" gridVisibleField.ControlType === EnumControlType.DateTime ||gridVisibleField.ControlType === EnumControlType.DateOnly ||
+              gridVisibleField.ControlType === EnumControlType.TimeOnly"
+                [type]="gridVisibleField.GridEditorOptions.displayFormat">
+              </dxo-format>
+              <dxi-validation-rule *ngIf="gridVisibleField.Mandatory" type="required"></dxi-validation-rule>
+              <dxi-validation-rule *ngIf="gridVisibleField.DataType === EnumDataType.Email" type="pattern"
+                [pattern]="RegExpConstants.EmailRegualrExpresssion">
+              </dxi-validation-rule>
+              <dxi-validation-rule *ngIf="gridVisibleField.ControlType === EnumControlType.PhoneNumber" type="pattern"
+                [pattern]="RegExpConstants.PhoneRegualrExpresssion">
+              </dxi-validation-rule>
+              <dxo-lookup
+                *ngIf="gridVisibleField.ControlType === EnumControlType.ComboBox || gridVisibleField.ControlType === EnumControlType.RadioButton"
+                [dataSource]="gridVisibleField.GridDefaultItems" displayExpr="Name" valueExpr="Value">
+              </dxo-lookup>
+              <dxo-lookup *ngIf="gridVisibleField.ControlType === EnumControlType.AutoCompleteTextBox"
+                [dataSource]="gridVisibleField.GridDefaultItems" displayExpr="Name" valueExpr="Value">
+              </dxo-lookup>
+              <dxo-lookup
+                *ngIf="gridVisibleField.ControlType === EnumControlType.Switch || gridVisibleField.ControlType === EnumControlType.CheckBox"
+                [dataSource]="gridVisibleField.GridSwitchItems" displayExpr="Name" valueExpr="Value">
+              </dxo-lookup>
+              <dxo-lookup
+                *ngIf="TemplateData.isDefaultUserFlowEnabled && gridVisibleField.Name === ControlNameConstants.USER_LOGIN_STATUS"
+                [dataSource]="gridVisibleField.GridDefaultValue" displayExpr="name" valueExpr="id">
+              </dxo-lookup>
+              <dxo-lookup *ngIf="gridVisibleField.ControlType === EnumControlType.Entity"
+                [dataSource]="gridVisibleField.BrowseControlCustomStore" displayExpr="DisplayName" valueExpr="Id">
+              </dxo-lookup>
+              <dxo-lookup
+                *ngIf="TemplateData.isDefaultUserFlowEnabled && gridVisibleField.Name === ControlNameConstants.ROLE_ID"
+                [dataSource]="gridVisibleField.GridDefaultUserRoles" displayExpr="Name" valueExpr="Id">
+              </dxo-lookup>
+            </dxi-column>
+          </ng-container>
+        </ng-container>
+        <!-- endregion -->
+        <!-- #region column modifiers configs-->
+        <dxo-column-chooser [title]="t('ColumnChooser')" [enabled]="config.columnConfiguration.columnChooseEnabled"
+          [mode]="config.columnConfiguration.columnChooserMode">
+        </dxo-column-chooser>
+        <!-- NOTE: disabled column fixing by force as it causes scroll break,custom template design breaks after version(20.2.6) upgrade -->
+        <dxo-column-fixing [enabled]="false"></dxo-column-fixing>
+        <!-- endregion -->
+        <!-- #region operation configs-->
+        <dxo-editing [mode]="config.editingConfiguration.editingMode"
+          [refreshMode]="config.editingConfiguration.refreshMode" [allowUpdating]="!TemplateData.isEditLocked"
+          [allowDeleting]="schema.HasDeletePermission && config.editingConfiguration.allowDeleting"
+          [confirmDelete]="false" [useIcons]="config.editingConfiguration.useIcons"
+          [startEditAction]="config.editingConfiguration.startEditAction">
+          <dxo-texts [confirmDeleteMessage]="t('DELETE_RECORD_CONFIRMATION')"></dxo-texts>
+        </dxo-editing>
+        <!-- TODO : Need to change button text for translation -->
+        <!-- button column hiding false so that it can not be hidden in column choosing -->
+        <dxi-column cssClass="vertical-align-middle" type="buttons" width="50" [allowResizing]="false"
+          [allowFixing]="false" [allowHiding]="false">
+          <!-- schedule create button -->
+          <dxi-button template="newScheduleButtonTemplate">
+            <ng-container *dxTemplate="let data of 'newScheduleButtonTemplate'">
+              <i *ngIf="TemplateData.isSchemaValidForScheduler" class="custom-column-button-icon dx-icon-event"
+                [helipopperPlacement]="'bottom'" [helipopper]="t('AddSchedule')"
+                (click)="openScheduleFormPopup(data)"></i>
+            </ng-container>
+          </dxi-button>
+          <dxi-button template="recordDeatilsButtonTemplate">
+            <ng-container *dxTemplate="let data of 'recordDeatilsButtonTemplate'">
+              <i class="custom-column-button-icon dx-icon-detailslayout" [helipopperPlacement]="'bottom'"
+                [helipopper]="t('Details')" (click)="onDetailsButtonClick(data)"></i>
+            </ng-container>
+          </dxi-button>
+          <dxi-button [hint]="t('Edit')" name="edit"></dxi-button>
+          <!-- custom delete button -->
+          <dxi-button template="singleDeleteButtonTemplate">
+            <ng-container *dxTemplate="let data of 'singleDeleteButtonTemplate'">
+              <i class="custom-column-button-icon dx-icon-trash" [helipopperPlacement]="'bottom'"
+                [helipopper]="t('Delete')" (click)="deleteSingleRecord(data)"></i>
+            </ng-container>
+          </dxi-button>
+        </dxi-column>
+        <!-- endregion -->
+        <!-- #region display templates-->
+        <div *dxTemplate="let cell of DisplayTemplateEnum.ParentPhotoTemplate" class="d-flex justify-content-center">
+          <div *ngIf="cell.data[ControlNameConstants.PARENT_DISPLAY_PICTURE] as DisplayValue; else defaultImage">
+            <img [src]="DisplayValue" loading="lazy" class="entity-display-picture" />
+          </div>
+          <ng-template #defaultImage>
+            <div class="entity-display-picture">
+              <app-svg-icon [name]="SvgIconEnum.DefaultImage"></app-svg-icon>
+            </div>
+          </ng-template>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.PhotoTemplate" class="d-flex justify-content-center">
+          <div
+            *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] as DisplayValue; else defaultImage">
+            <img [src]="DisplayValue" loading="lazy" class="entity-display-picture" />
+          </div>
+          <ng-template #defaultImage>
+            <div class="entity-display-picture">
+              <app-svg-icon [name]="SvgIconEnum.DefaultImage"></app-svg-icon>
+            </div>
+          </ng-template>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.BarcodePhotoTemplate">
+          <div class="barcode-picture">
+            <qrcode #qrCode *ngIf="cell.value; else defaultBarcodeImage" [elementType]="'img'" [qrdata]="cell.value"
+              size="50" [width]="60" errorCorrectionLevel="M">
+            </qrcode>
+          </div>
+          <ng-template #defaultBarcodeImage>
+            <div class="bar-code-picture">
+              <app-svg-icon [name]="SvgIconEnum.DefaultBarcode"></app-svg-icon>
+            </div>
+          </ng-template>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.EntityDetailsTemplate" class="overflowed-text">
+          <a class="fixed-height-row-elipse parent-link-color" [helipopperTextOverflow]="true"
+            [helipopperPlacement]="'auto'" [helipopperMaxWidth]="'80vw'" [helipopper]="cell.value"
+            (click)="loadEntityDetails(cell)">{{ cell.value }}</a>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.TextFieldTemplate" [helipopperTextOverflow]="true"
+          [helipopperPlacement]="'auto'" [helipopperMaxWidth]="'80vw'" [helipopper]="cell.value"
+          class="overflowed-text">
+          <span [innerHTML]="cell.value | linky"></span>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.RatingTemplate">
+          <star-rating [value]="cell.value" [readonly]="true" [totalstars]="5" checkedcolor="orange"
+            uncheckedcolor="#e2e2e2" size="24px"></star-rating>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.DropDownTemplate" [helipopperTextOverflow]="true"
+          [helipopperPlacement]="'bottom'" [helipopper]="cell.value" class="overflowed-text-clip">
+          <div *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] as DisplayValueText">
+            <ng-container *ngIf="cell.value && cell.data[DataGridInternalFieldNameEnum.TemplateModel] as TemplateModel">
+              <div *ngIf="TemplateModel[cell.column.dataField]?.ShowDropdownBadgeStyle; else dotBadge"
+                class="flex-align-center">
+                <div
+                  *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayColor] as DisplayColor; else defaultDropdownBadge"
+                  class="dropdown-badge" [ngStyle]="{ background: DisplayColor }">
+                  {{ DisplayValueText }}
+                </div>
+                <ng-template #defaultDropdownBadge>
+                  <div class="dropdown-badge">{{ DisplayValueText }}</div>
+                </ng-template>
+              </div>
+              <ng-template #dotBadge>
+                <ng-container
+                  *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayColor] as DisplayColor; else defaultDotBadge">
+                  <div class="dropdown-badge-dot" [ngStyle]="{background:  DisplayColor}"></div>
+                  <span class="dropdown-badge-text" [ngStyle]="{ color: DisplayColor }">{{ DisplayValueText }}</span>
+                </ng-container>
+                <ng-template #defaultDotBadge>
+                  <div class="dropdown-badge-dot"></div>
+                  <span class="dropdown-badge-text">{{ DisplayValueText }}</span>
+                </ng-template>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.CheckBoxAndSwitchTemplate">
+          <div class="overflowed-text flex-align-center" [helipopperTextOverflow]="true"
+            [helipopperPlacement]="'bottom'"
+            [helipopper]="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue]">
+            <span *ngIf="cell.value"
+              class="switch-true">{{ cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] }}</span>
+            <span *ngIf="!cell.value"
+              class="switch-false">{{ cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] }}</span>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.MultiSelectTemplate">
+          <div class="overflowed-text"
+            *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] as DisplayValue"
+            [helipopperTextOverflow]="true" [helipopperMaxWidth]="'80vw'" [helipopperPlacement]="'auto'"
+            [helipopper]="DisplayValue">
+            <span>{{ DisplayValue}}</span>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.DefaultUserInvitationStatusTemplate">
+          <div class="overflowed-text-clip flex-align-center"
+            *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] as DisplayValue"
+            [helipopperTextOverflow]="true" [helipopperPlacement]="'bottom'" [helipopper]="DisplayValue">
+            <div class="dropdown-badge"
+              *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayColor] as DisplayColor; else defaultinvaitationDropdownBadge"
+              [ngStyle]="{ background: DisplayColor }">
+              {{ DisplayValue }}
+            </div>
+            <ng-template #defaultinvaitationDropdownBadge>
+              <div class="dropdown-badge"> {{ DisplayValue }} </div>
+            </ng-template>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of DisplayTemplateEnum.DefaultUserRoleTemplate">
+          <div *ngIf="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.DisplayValue] as DisplayValue"
+            [helipopperTextOverflow]="true" [helipopperPlacement]="'bottom'" [helipopper]="DisplayValue"
+            class="overflowed-text">
+            {{ DisplayValue}}
+          </div>
+        </div>
+        <!-- endregion -->
+        <!-- #region edit templates-->
+        <div *dxTemplate="let cell of EditorTemplateEnum.TextAreaEditTemplate">
+          <ng-container *ngIf="cell.data[DataGridInternalFieldNameEnum.TemplateModel] as TemplateModel">
+            <dx-text-area [value]="cell.value" [placeholder]="TemplateModel[cell.column.dataField]?.PlaceHolderText"
+              [autoResizeEnabled]="true" [minHeight]="50" [maxHeight]="100"
+              (onValueChanged)="cell.setValue($event.value)">
+            </dx-text-area>
+          </ng-container>
+        </div>
+        <div *dxTemplate="let cell of EditorTemplateEnum.RatingEditTemplate">
+          <div class="rating-edit-template-wrapper">
+            <star-rating [value]="cell.value" (rate)="onRate($event,cell)" [totalstars]="5" checkedcolor="orange"
+              uncheckedcolor="#e2e2e2" size="24px"></star-rating>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of EditorTemplateEnum.SwitchEditTemplate">
+          <ng-container *ngIf="cell.data[DataGridInternalFieldNameEnum.TemplateModel] as TemplateModel">
+            <dx-switch [(value)]="cell.value" [width]="75"
+              [switchedOnText]="TemplateModel[cell.column.dataField]?.SwitchOnDisplayText ? TemplateModel[cell.column.dataField]?.SwitchOnDisplayText : TemplateModel[cell.column.dataField]?.SwitchOnText"
+              [switchedOffText]="TemplateModel[cell.column.dataField]?.SwitchOffDisplayText ? TemplateModel[cell.column.dataField]?.SwitchOffDisplayText : TemplateModel[cell.column.dataField]?.SwitchOffText"
+              (onValueChanged)="cell.setValue($event.value)">
+            </dx-switch>
+          </ng-container>
+        </div>
+        <div *dxTemplate="let cell of EditorTemplateEnum.CheckBoxEditTemplate">
+          <dx-check-box [(value)]="cell.value" (onValueChanged)="cell.setValue($event.value)">
+          </dx-check-box>
+        </div>
+        <div *dxTemplate="let data of EditorTemplateEnum.DropDownEditTemplate">
+          <div [hidden]="!data">
+            <span class="middle" *ngIf="data">{{ data.Name }}</span>
+          </div>
+          <div [hidden]="data">
+            <span>{{'All' | transloco}}</span>
+          </div>
+        </div>
+        <div *dxTemplate="let cell of EditorTemplateEnum.MultiSelectEditTemplate">
+          <ng-container *ngIf="cell.data[DataGridInternalFieldNameEnum.TemplateModel] as TemplateModel">
+            <dx-tag-box [value]="cell.data[cell.column.dataField+DataGridInternalFieldNameEnum.SelectedValue]"
+              [placeholder]="TemplateModel[cell.column.dataField]?.PlaceHolderText"
+              [items]="TemplateModel[cell.column.dataField]?.GridDefaultItems" displayExpr="Name" valueExpr="Value"
+              [searchEnabled]="true" [showSelectionControls]="true" [applyValueMode]="'useButtons'"
+              [maxDisplayedTags]="3" [showMultiTagOnly]="false" (onValueChanged)="cell.setValue($event.value)"
+              (onSelectionChanged)="cell.component.updateDimensions()">
+            </dx-tag-box>
+          </ng-container>
+        </div>
+        <!-- endregion -->
+        <!-- #region custom loader template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.CustomLoaderInfoTemplate">
+          <div class="custom-loader-info-div">
+            <ng-container
+              *ngIf="config.scrollingConfiguration.dataScrollingMode !== GridDataScrollingModeEnum.Standard">
+              <span class="custom-loader-info"
+                *ngIf="TemplateData.showCustomLoaderLoadingInfo && !TemplateData.showDataGridLoader && !TemplateData.showCustomLoaderSavingInfo && !TemplateData.showCustomLoaderSaveInfo">
+                <i class="fa-li fa fa-spinner fa-spin"></i>
+                <span class="custom-loader-info-title">{{ t('LoadingLong') }}</span>
+              </span>
+            </ng-container>
+            <span class="custom-loader-info" *ngIf="TemplateData.showCustomLoaderSavingInfo">
+              <i class="fa-li fa fa-spinner fa-spin"></i>
+              <span class="custom-loader-info-title"
+                *ngIf="TemplateData.showCustomLoaderOperationType === EnumOperationType.Updating">{{ t('UpdatingLong') }}</span>
+              <span class="custom-loader-info-title"
+                *ngIf="TemplateData.showCustomLoaderOperationType === EnumOperationType.Deleting">{{ t('DeletingLong') }}</span>
+            </span>
+            <span class="custom-loader-info"
+              *ngIf="TemplateData.showCustomLoaderSaveInfo && !TemplateData.showCustomLoaderSavingInfo">
+              <i class="fa fa-check"></i>
+              <span class="custom-loader-info-title-saved"
+                *ngIf="TemplateData.showCustomLoaderOperationType === EnumOperationType.Updating">{{ t('Updated') }}</span>
+              <span class="custom-loader-info-title-saved"
+                *ngIf="TemplateData.showCustomLoaderOperationType === EnumOperationType.Deleting">{{ t('Deleted') }}</span>
+            </span>
+          </div>
+        </div>
+        <!-- endregion -->
+        <!-- #region export button template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.ExportButtonTemplate">
+          <dx-drop-down-button icon="export" [hint]="t('ExportData')" displayExpr="name" keyExpr="value"
+            [elementAttr]="{'id': GridElementIdConstants.DATA_EXPORT_BUTTON_ID}" [dropDownOptions]="{ width: 220 }"
+            [items]="exportButtonOptions" (onItemClick)="onExportButtonOptionsClick($event)"></dx-drop-down-button>
+        </div>
+        <!-- endregion -->
+        <!-- #region import button template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.ImportButtonTemplate">
+          <dx-drop-down-button icon="upload" [hint]="t('ImportData')" displayExpr="name" keyExpr="value"
+            [elementAttr]="{'id': GridElementIdConstants.DATA_IMPORT_BUTTON_ID}" [dropDownOptions]="{ width: 220 }"
+            [items]="importButtonOptions" (onItemClick)="onImportButtonOptionsClick($event)"></dx-drop-down-button>
+        </div>
+        <!-- endregion -->
+        <!-- #region print button template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.PrintButtonTemplate">
+          <dx-drop-down-button icon="print" [hint]="t('PRINT_DATA')" displayExpr="name" keyExpr="value"
+            [elementAttr]="{'id': GridElementIdConstants.DATA_PRINT_BUTTON_ID}" [dropDownOptions]="{ width: 220 }"
+            [items]="printButtonOptions" (onItemClick)="onPrintButtonOptionsClick($event)">
+            <!-- itemTemplate="listItem" -->
+            <!-- <div *dxTemplate="let data of 'listItem'; let index = index">
+              <ng-container *ngIf="data">
+                <ng-container *ngIf="data.value === EnumPrintOptions.DOWNLOAD_CONFIGURATION; else templatesForPrint">
+                  <span class="download-config-btn">{{data.name}}</span>
+                </ng-container>
+                <ng-template #templatesForPrint>
+                  {{data.name}}
+                </ng-template>
+              </ng-container>
+            </div> -->
+          </dx-drop-down-button>
+        </div>
+        <!-- endregion -->
+        <!-- #region default user button template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.DefaultUserInvitationButtonTemplate">
+          <dx-button class="invitation-btn invitation-btn-reinvite"
+            [elementAttr]="{'id': GridElementIdConstants.DEFAULT_USER_REINVITE_BUTTON_ID}"
+            [icon]="(loadIndicatorVisibleForReInviting$ | async) ?'../../../assets/img/spinner.gif':'email'"
+            [text]="((loadIndicatorVisibleForReInviting$ | async) ? t('ReInviting') :t('ReInvite'))" type="default"
+            [disabled]="(loadIndicatorVisibleForReInviting$ | async) || (loadIndicatorVisibleForRemoving$ | async) || (loadIndicatorVisibleForEnabling$ | async)"
+            stylingMode="contained" [hint]="t('ReInvite')" [visible]="showDefaultUserReInviteButton$ | async"
+            (onClick)="onReInviteClick()">
+          </dx-button>
+          <dx-button class="invitation-btn"
+            [elementAttr]="{'id': GridElementIdConstants.DEFAULT_USER_REMOVE_LOGIN_ACCESS_BUTTON_ID}"
+            [icon]="(loadIndicatorVisibleForRemoving$ | async) ?'../../../assets/img/spinner.gif':'key'"
+            [text]="((loadIndicatorVisibleForRemoving$ | async) ? t('RemovingLoginAccess') : t('RemoveLoginAccess'))"
+            type="danger"
+            [disabled]="(loadIndicatorVisibleForReInviting$ | async) || (loadIndicatorVisibleForRemoving$ | async) || (loadIndicatorVisibleForEnabling$ | async)"
+            stylingMode="contained" [hint]="t('RemoveLoginAccess')"
+            [visible]="showDefaultUserRemoveLoginAccessButton$ | async" (onClick)="onRemoveLoginAccessClick()">
+          </dx-button>
+          <dx-button class="invitation-btn"
+            [elementAttr]="{'id': GridElementIdConstants.DEFAULT_USER_ENABLE_LOGIN_ACCESS_BUTTON_ID}"
+            [icon]="(loadIndicatorVisibleForEnabling$ | async) ?'../../../assets/img/spinner.gif':'check'"
+            [text]="((loadIndicatorVisibleForEnabling$ | async) ? t('EnablingLoginAccess') : t('EnableLoginAccess'))"
+            type="success"
+            [disabled]="(loadIndicatorVisibleForReInviting$ | async) || (loadIndicatorVisibleForRemoving$ | async) || (loadIndicatorVisibleForEnabling$ | async)"
+            stylingMode="contained" [hint]="t('EnableLoginAccess')"
+            [visible]="showDefaultUserEnableLoginAccessButton$ | async" (onClick)="showEnableLoginAccessModal()">
+          </dx-button>
+        </div>
+        <!-- endregion -->
+        <!-- #region multiple records delete button template-->
+        <div *dxTemplate="let data of DisplayTemplateEnum.MultipleRecordsDeleteButtonTemplate">
+          <dx-button class="multiple-record-delete-btn" type="danger" stylingMode="contained"
+            [elementAttr]="{'id': GridElementIdConstants.MULTIPLE_RECORD_DELETE_BUTTON_ID}"
+            [icon]="TemplateData.loadIndicatorVisibleForMultipleRecordsDelete ?'../../../assets/img/spinner.gif':'trash'"
+            [text]="(TemplateData.loadIndicatorVisibleForMultipleRecordsDelete ? t('DeletingSelectedRecords') :t('DeleteSelectedRecords'))"
+            [disabled]="TemplateData.loadIndicatorVisibleForMultipleRecordsDelete" [hint]="t('DeleteSelectedRecords')"
+            [visible]="TemplateData.showMultipleRecordsDeleteButton || TemplateData.loadIndicatorVisibleForMultipleRecordsDelete"
+            (onClick)="deleteMultipleRecords()">
+          </dx-button>
+        </div>
+        <!-- endregion -->
+      </dx-data-grid>
+      <!-- custom info row for showing selected records count -->
+      <div class="row custom-info-row" *ngIf="totalSelectedRecords$ | async as totalSelectedRecords">
+        <div class="col-md-12">
+          <div class="selection-info">
+            <i class="dx-icon-check custom-selected-icon"></i>
+            <span class="p-l-25">{{ totalSelectedRecords }}</span>
+            <span class="p-l-25">{{t('RowsSelected')}}</span>
+          </div>
+        </div>
+      </div>
+      <app-data-grid-loader
+        *ngIf="config.scrollingConfiguration.dataScrollingMode === GridDataScrollingModeEnum.Standard"
+        [isLoading]="TemplateData.showCustomLoaderLoadingInfo && !TemplateData.showDataGridLoader && !TemplateData.showCustomLoaderSavingInfo && !TemplateData.showCustomLoaderSaveInfo">
+      </app-data-grid-loader>
+    </div>
+  </div>
+  <!--role select popup for default user-->
+  <dx-popup [width]="'auto'" [height]="'auto'" class="custom-dx-popup" [showTitle]="true"
+    [helipopperTextOverflow]="true" [helipopperPlacement]="'bottom'" [helipopper]="t('RoleSelection')"
+    [dragEnabled]="false" [closeOnOutsideClick]="true" (onHiding)="hideEnableLoginAccessModal()"
+    [visible]="showRoleSelectionModal$ | async">
+    <div class="row px-4 pb-3">
+      <div class="dx-fieldset">
+        <div #container class="dx-field">
+          <dx-select-box #sboxRoleSelect id="select-role" class="invitation-btn" [(value)]="RoleId" [items]="roles"
+            displayExpr="Name" valueExpr="Id" [placeholder]="t('SelectRole')">
+          </dx-select-box>
+        </div>
+      </div>
+    </div>
+    <div class="row px-4 pb-4 d-flex justify-content-center">
+      <dx-button class="invitation-btn" icon="check" [text]="t('EnableLoginAccess')" type="success"
+        stylingMode="contained" [hint]="t('EnableLoginAccess')" [visible]="showDefaultUserEnableLoginAccessButton"
+        (onClick)="onEnableLoginAccessClick()">
+      </dx-button>
+    </div>
+  </dx-popup>
+  <!-- schedule add/edit popup -->
+</ng-container>
+<div id="targetDivForMustacheTemplate">
+</div>

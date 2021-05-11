@@ -1,0 +1,39 @@
+{
+  "npmScope": "CloudApperClients",
+  "implicitDependencies": {
+    "angular.json": "*",
+    "package.json": "*",
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "kernello-apps": {
+      "tags": []
+    },
+    "CloudApperClient": {
+      "tags": []
+    },
+    "shared-component": {
+      "tags": []
+    },
+    "http": {
+      "tags": []
+    },
+    "oidc-auth": {
+      "tags": []
+    },
+    "data-service": {
+      "tags": []
+    },
+    "logger-service": {
+      "tags": []
+    },
+    "app-model": {
+      "tags": []
+    },
+    "error-handler": {
+      "tags": []
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<dx-popup [width]="700" [height]="'auto'" [showTitle]="true" [title]="'AppIsNotCompleteTitle'|transloco"
+    [dragEnabled]="false" [closeOnOutsideClick]="showConsoleButton?false:true"
+    [showCloseButton]="showConsoleButton?false:true" [visible]="showPopup">
+    <div class="row px-4 pb-4">
+        <h5 class="client-selection-text">{{'AppIsNotCompleteMessage'|transloco}}</h5>
+    </div>
+    <div class="row px-4 pb-2 d-flex justify-content-center">
+        <dx-button *ngIf="showConsoleButton" class="mr-2" [icon]="'arrowleft'" [text]="'GoBackToConsole' | transloco"
+            type="normal" stylingMode="contained" [routerLink]="['']">
+        </dx-button>
+        <dx-button [icon]="'fields'" [text]="'LetsAddSomeForm' | transloco" type="success" stylingMode="contained"
+            (onClick)="startRedirectionToDesignApp()">
+        </dx-button>
+    </div>
+</dx-popup>

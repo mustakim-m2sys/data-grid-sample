@@ -1,0 +1,39 @@
+.loader-card {
+  width: 222px;
+  height: auto;
+  background: #fff;
+  position: absolute;
+  left: calc(50% - 111px);
+  top: calc(50% - 45px);
+  z-index: 999;
+  display: flex !important;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0s ease 0s;
+  padding: 0.8rem 1rem;
+}
+
+.loader-content {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  flex-direction: column;
+}
+
+.data-grid-screen {
+  height: 96%;
+  width: 100%;
+  /* background-color: rgba(0, 0, 0, 0.29); */
+  position: absolute;
+  top: 0;
+  z-index: 99;
+}
+
+.loader-gif {
+  height: var(--global-loader-icon-height);
+  width: var(--global-loader-text-width);
+}
