@@ -618,7 +618,8 @@ export class DataGridComponent implements OnInit, OnDestroy {
           this.dataGrid.instance.clearFilter();
           if (loadOptions.filter) loadOptions.filter = null;
           //refresh data grid view
-          this.dataGrid.instance.repaint();
+          // removed for solve the fixed command column
+          // this.dataGrid.instance.repaint();
           //start the data grid loader for first time loading
           this.showDataGridLoader = true;
           //modify loadOptions skip and take to load from start
