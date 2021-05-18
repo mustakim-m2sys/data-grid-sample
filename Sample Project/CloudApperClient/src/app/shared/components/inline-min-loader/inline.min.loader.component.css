@@ -1,0 +1,25 @@
+.inline-min-loader-wrapper {
+  margin: 10px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inline-min-loader-icon {
+  color: #6c757d;
+}
+
+.inline-min-loader-loading-text {
+  color: #6c757d;
+  margin-left: -20px;
+}
+
+.inline-min-checked-icon {
+  color: #4cae4c;
+}
+
+.inline-min-loader-completed-text {
+  color: #4cae4c;
+  margin-left: 5px;
+}

@@ -1,0 +1,104 @@
+.local-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.relative-loader {
+  position: relative;
+  left: 0%;
+  top: 0%;
+}
+
+
+.dot-pulse {
+  position: relative;
+  left: -9999px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: var(--dot-pulse-loader-color);
+  color: var(--dot-pulse-loader-color);
+  box-shadow: 9999px 0 0 -5px var(--dot-pulse-loader-color);
+  animation: dotPulse 1.5s infinite linear;
+  animation-delay: 0.25s;
+  opacity: 1;
+  z-index: 999;
+}
+
+.dot-pulse::before {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  right: 20px;
+  background-color: var(--dot-pulse-loader-color);
+  color: var(--dot-pulse-loader-color);
+}
+
+.dot-pulse::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  left: 20px;
+  background-color: var(--dot-pulse-loader-color);
+  color: var(--dot-pulse-loader-color);
+}
+
+.dot-pulse::before {
+  box-shadow: 9984px 0 0 -5px var(--dot-pulse-loader-color);
+  animation: dotPulseBefore 1.5s infinite linear;
+  animation-delay: 0s;
+}
+
+.dot-pulse::after {
+  box-shadow: 10014px 0 0 -5px var(--dot-pulse-loader-color);
+  animation: dotPulseAfter 1.5s infinite linear;
+  animation-delay: 0.5s;
+}
+
+@keyframes dotPulseBefore {
+  0% {
+    box-shadow: 9984px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+  30% {
+    box-shadow: 9984px 0 0 2px var(--dot-pulse-loader-color);
+  }
+  60%,
+  100% {
+    box-shadow: 9984px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 9999px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+  30% {
+    box-shadow: 9999px 0 0 2px var(--dot-pulse-loader-color);
+  }
+  60%,
+  100% {
+    box-shadow: 9999px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+}
+
+@keyframes dotPulseAfter {
+  0% {
+    box-shadow: 10014px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+  30% {
+    box-shadow: 10014px 0 0 2px var(--dot-pulse-loader-color);
+  }
+  60%,
+  100% {
+    box-shadow: 10014px 0 0 -5px var(--dot-pulse-loader-color);
+  }
+}

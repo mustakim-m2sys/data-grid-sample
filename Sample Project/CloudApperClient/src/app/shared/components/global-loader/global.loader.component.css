@@ -1,0 +1,13 @@
+::ng-deep .dx-loadpanel-content {
+  height: auto !important;
+}
+
+::ng-deep .dx-loadpanel-content-wrapper > .dx-loadindicator {
+  height: var(--global-loader-icon-height);
+  width: var(--global-loader-text-width);
+}
+
+::ng-deep .dx-loadpanel-message {
+  display: var(--global-loader-text-display);
+  margin-top: 5px;
+}

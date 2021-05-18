@@ -1,0 +1,389 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "",
+  "projects": {
+    "CloudApperClient": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "CloudApperClient/src",
+      "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "css",
+          "skipTests": true
+        },
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:module": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/CloudApperClient",
+            "index": "CloudApperClient/src/index.html",
+            "main": "CloudApperClient/src/main.ts",
+            "polyfills": "CloudApperClient/src/polyfills.ts",
+            "tsConfig": "CloudApperClient/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "CloudApperClient/src/ca_favicon.ico",
+              "CloudApperClient/src/assets"
+            ],
+            "styles": [
+              "node_modules/devextreme/dist/css/dx.common.css",
+              "node_modules/devextreme/dist/css/dx.light.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "CloudApperClient/src/animate.min.css",
+              "CloudApperClient/src/bootstrap-dropdownhover.min.css",
+              "CloudApperClient/src/styles.css",
+              "node_modules/ngx-lightbox/lightbox.css",
+              "node_modules/intro.js/introjs.css"
+            ],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "CloudApperClient/src/assets/js/jquery.easymenu.js",
+              "node_modules/intro.js/intro.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "CloudApperClient/src/environments/environment.ts",
+                  "with": "CloudApperClient/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "aot": true,
+              "outputHashing": "all",
+              "buildOptimizer": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "vendorChunk": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "CloudApperClient/src/environments/environment.ts",
+                  "with": "CloudApperClient/src/environments/environment.dev.ts"
+                }
+              ],
+              "optimization": true,
+              "aot": true,
+              "outputHashing": "all",
+              "buildOptimizer": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "vendorChunk": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "hmr": {
+              "fileReplacements": [{
+                "replace": "CloudApperClient/src/environments/environment.ts",
+                "with": "CloudApperClient/src/environments/environment.hmr.ts"
+              }],
+              "aot": true
+            },
+            "local": {
+              "fileReplacements": [{
+                "replace": "CloudApperClient/src/environments/environment.ts",
+                "with": "CloudApperClient/src/environments/environment.local.ts"
+              }],
+              "aot": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "CloudApperClient:build"
+          },
+          "configurations": {
+            "production": {
+              "hmr": false,
+              "sourceMap":false,
+              "aot":true,
+              "browserTarget": "CloudApperClient:build:production"
+            },
+            "dev": {
+              "hmr": false,
+              "sourceMap":false,
+              "aot":true,
+              "browserTarget": "CloudApperClient:build:dev"
+            },
+            "local": {
+              "hmr": false,
+              "sourceMap":true,
+              "aot":true,
+              "browserTarget": "CloudApperClient:build:local"
+            },
+            "hmr": {
+              "hmr": true,
+              "sourceMap":true,
+              "aot":true,
+              "browserTarget": "CloudApperClient:build:hmr"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "CloudApperClient:build"
+          }
+        }
+      }
+    },
+    "shared-component": {
+      "root": "",
+      "sourceRoot": "libs/shared-component/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/shared-component/tsconfig.lib.json",
+              "libs/shared-component/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "libs/shared-component/jest.config.js",
+            "tsConfig": "libs/shared-component/tsconfig.spec.json",
+            "setupFile": "libs/shared-component/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "http": {
+      "root": "",
+      "sourceRoot": "libs/http/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/http/tsconfig.lib.json",
+              "libs/http/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "libs/http/jest.config.js",
+            "tsConfig": "libs/http/tsconfig.spec.json",
+            "setupFile": "libs/http/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "oidc-auth": {
+      "root": "",
+      "sourceRoot": "libs/oidc-auth/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/oidc-auth/tsconfig.lib.json",
+              "libs/oidc-auth/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "libs/oidc-auth/jest.config.js",
+            "tsConfig": "libs/oidc-auth/tsconfig.spec.json"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "data-service": {
+      "root": "",
+      "sourceRoot": "libs/data-service/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/data-service/tsconfig.lib.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "logger-service": {
+      "root": "",
+      "sourceRoot": "libs/logger-service/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/logger-service/tsconfig.lib.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "app-model": {
+      "root": "",
+      "sourceRoot": "libs/app-model/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/app-model/tsconfig.lib.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    },
+    "error-handler": {
+      "root": "",
+      "sourceRoot": "libs/error-handler/src",
+      "projectType": "library",
+      "prefix": "CloudApperClients",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/error-handler/tsconfig.lib.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "css"
+        }
+      }
+    }
+  },
+  "cli": {
+    "warnings": {
+      "versionMismatch": false
+    },
+    "defaultCollection": "@datorama/akita",
+    "analytics": false
+  },
+  "schematics": {
+    "@nrwl/schematics:application": {
+      "style": "css",
+      "framework": "angular"
+    },
+    "@nrwl/schematics:library": {
+      "style": "css"
+    }
+  },
+  "defaultProject": "CloudApperClient"
+}

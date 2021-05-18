@@ -596,7 +596,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   }
 
   initCustomStore() {
-    console.log('Data Grid Init');
     let initView = true;
     this.RegisterEvents();
     this.dataSource = new CustomStore({

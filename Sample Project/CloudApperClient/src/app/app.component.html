@@ -1,0 +1,17 @@
+<!-- <router-outlet></router-outlet>
+<app-help-popup></app-help-popup>
+<app-global-loader></app-global-loader>
+<app-token-expire-popup></app-token-expire-popup>
+<app-dot-pulse-loader [IsLoading]="lazyLoadingModuleIndicator" color="#1ab394"></app-dot-pulse-loader> -->
+
+<div class="container">
+    <app-data-grid
+    [schema]="schema"
+    [menu]="menu"
+	[config]="dataGridConfiguration"
+    [view]="null"
+	[predefinedFilterQuery]="''"
+    [predefinedSortQuery]="''"
+	[gridType]="enumGridType.PARENT">
+</app-data-grid>
+</div>

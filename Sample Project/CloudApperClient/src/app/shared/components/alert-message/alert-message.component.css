@@ -1,0 +1,51 @@
+.alert-msg blockquote {
+  padding: 0 1rem 1rem;
+  border-left: 55px solid #607d8b;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.alert-msg blockquote:before {
+  display: inline-block;
+  position: absolute;
+  margin-top: -12px;
+  top: 50%;
+  left: -38px;
+  color: hsla(0, 0%, 100%, 0.7);
+}
+
+.alert-msg blockquote p {
+  padding: 1rem 0 0;
+  margin: 0;
+}
+
+.alert-msg-success {
+  background-color: #e3f2fd;
+  border-color: #64b5f6 !important;
+  color: #0d47a1;
+}
+
+.alert-msg-success:before {
+  content: url(../../../../assets/img/svg-icon/info.svg);
+}
+
+.alert-msg-warning {
+  background-color: #fff3e0;
+  border-color: #ffb74d !important;
+  color: #b33f00;
+}
+
+.alert-msg-warning:before {
+  content: url(../../../../assets/img/svg-icon/warning.svg);
+}
+
+.alert-msg-error {
+  background-color: #ffebee;
+  border-color: #e57373 !important;
+  color: #b71c1c;
+}
+
+.alert-msg-error:before {
+  content: url(../../../../assets/img/svg-icon/danger.svg);
+}
